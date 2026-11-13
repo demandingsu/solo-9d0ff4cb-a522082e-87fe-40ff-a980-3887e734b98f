@@ -57,9 +57,41 @@ ISSUES: dict[str, dict] = {
             {"id": "c9", "pages": "10", "image": True},
         ],
     },
+    "tangle": {
+        "slug": "tangle",
+        "issue": "2024-05-04",
+        "edition": "第3版",
+        "total_pages": 6,
+        "title": "示例 D · 跨页牵连",
+        "description": "跨页扫描与相邻扫描重叠：撤下 t2、t5 两份后，原本有覆盖的每页恰好保留一份。",
+        "expected": "不合格",
+        "scans": [
+            {"id": "t1", "pages": "1-2", "image": True},
+            {"id": "t2", "pages": "2-3", "image": True},
+            {"id": "t3", "pages": "3-4", "image": True},
+            {"id": "t4", "pages": "5", "image": True},
+            {"id": "t5", "pages": "5-6", "image": True},
+            {"id": "t6", "pages": "6", "image": True},
+        ],
+    },
+    "unsolvable": {
+        "slug": "unsolvable",
+        "issue": "2024-05-05",
+        "edition": "第3版",
+        "total_pages": 4,
+        "title": "示例 E · 无解牵连",
+        "description": "第 1–3 页的覆盖互相牵连，任何撤下组合都会让某页缺页或仍重扫，只能列出相关页与扫描。",
+        "expected": "不合格",
+        "scans": [
+            {"id": "u1", "pages": "1-2", "image": True},
+            {"id": "u2", "pages": "2-3", "image": True},
+            {"id": "u3", "pages": "2-3", "image": True},
+            {"id": "u4", "pages": "4", "image": True},
+        ],
+    },
 }
 
-ISSUE_ORDER = ["clean", "conflict", "pending"]
+ISSUE_ORDER = ["clean", "conflict", "pending", "tangle", "unsolvable"]
 PAGE_SIZE = 3
 
 

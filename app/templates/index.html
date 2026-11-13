@@ -8,6 +8,7 @@
   <p class="hero-copy">
     系统会沿同站分页读完目录，抓取每个扫描详情，只采用“期版一致且带图片链接”的扫描覆盖页码。
     同一页被不同扫描覆盖记为重扫冲突；无人覆盖的页列为待补扫。
+    抓取完整时，系统还会给出撤下数量最少的建议，让原本有覆盖的每页恰好保留一份。
   </p>
 </section>
 
@@ -39,7 +40,7 @@
 <section class="demo-section">
   <div class="section-heading">
     <h2>断网演示样本</h2>
-    <p>本地样本站提供三个带分页的期，分别覆盖三种验收结果。</p>
+    <p>本地样本站提供五个带分页的期，覆盖合格、重扫、抓取失败与撤下建议场景。</p>
   </div>
   <div class="demo-grid">
     {% for item in demo_issues %}
@@ -80,6 +81,11 @@
       <span class="rule-icon pending">?</span>
       <h3>待核实</h3>
       <p>任一详情或目录分页抓取失败，整期不能判为合格，需人工复核。</p>
+    </article>
+    <article>
+      <span class="rule-icon remove">撤</span>
+      <h3>撤下建议</h3>
+      <p>抓取完整时，以整份扫描为单位选出撤下数量最少的一组，使原本有覆盖的每页恰好保留一份；约束无法同时满足的页会列出相关页码与扫描，不给出虚假方案。</p>
     </article>
   </div>
 </section>

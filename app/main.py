@@ -47,6 +47,18 @@ DEMO_ISSUES = [
         "description": "详情抓取失败，整期待核实。",
         "expected": "待核实",
     },
+    {
+        "path": "/issues/tangle/page/1.html",
+        "title": "示例 D · 跨页牵连",
+        "description": "跨页扫描互相重叠，撤下 2 份即可让每页恰好保留一份。",
+        "expected": "不合格",
+    },
+    {
+        "path": "/issues/unsolvable/page/1.html",
+        "title": "示例 E · 无解牵连",
+        "description": "第 1–3 页约束互相冲突，只能列出相关页码与扫描。",
+        "expected": "不合格",
+    },
 ]
 
 

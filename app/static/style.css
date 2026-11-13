@@ -248,6 +248,7 @@ code {
 .rule-icon.ok { background: #e2f2e9; color: var(--green); }
 .rule-icon.bad { background: #fae6e1; color: var(--red); }
 .rule-icon.pending { background: #f4e9d1; color: var(--amber); }
+.rule-icon.remove { background: #ece5f7; color: var(--violet); }
 
 .report-head {
   display: flex;
@@ -330,6 +331,29 @@ code {
 .chip-covered { background: #e2f2e9; color: var(--green); }
 .chip-conflict, .chip-bad { background: #fae6e1; color: var(--red); }
 .chip-missing { background: #f4e9d1; color: var(--amber); }
+.chip-keep { background: #e2f2e9; color: var(--green); }
+.chip-remove { background: #fae6e1; color: var(--red); }
+.chip-blocked { background: #ece5f7; color: var(--violet); }
+.removal-subhead { margin: 22px 0 10px; font-size: 18px; }
+.blocked-component { margin: 12px 0; }
+.blocked-scan-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.blocked-scan-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 8px 10px;
+  border: 1px solid #e5c9c2;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .55);
+  font-size: 13px;
+}
 .page-note { margin: 10px 0 0; color: var(--red); font-size: 13px; }
 .empty { margin: 14px 0 0; color: var(--amber); font-size: 14px; }
 .source-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 10px; }

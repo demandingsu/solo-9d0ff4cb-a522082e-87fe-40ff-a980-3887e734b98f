@@ -38,6 +38,12 @@
     <span class="stat-label">待补扫</span>
     <span class="stat-value">{{ report.missing_pages|length }}</span>
   </div>
+  {% if report.removal_plan and report.removal_plan.available %}
+  <div class="stat {% if report.removal_plan.remove %}stat-bad{% endif %}">
+    <span class="stat-label">建议撤下</span>
+    <span class="stat-value">{{ report.removal_plan.remove|length }}</span>
+  </div>
+  {% endif %}
   <div class="stat">
     <span class="stat-label">未采用扫描</span>
     <span class="stat-value">{{ report.ignored_scans|length }}</span>
@@ -54,6 +60,96 @@
   <ul>
     {% for warning in report.warnings %}<li>{{ warning }}</li>{% endfor %}
   </ul>
+</section>
+{% endif %}
+
+{% set plan = report.removal_plan %}
+{% if plan %}
+<section class="section">
+  <div class="section-heading">
+    <h2>撤下建议</h2>
+    <p>以一份扫描为不可拆分单位：跨页扫描只能整份保留或整份撤下；原本缺页的页仍列为待补扫。</p>
+  </div>
+
+  {% if not plan.available %}
+  <div class="notice">
+    <strong>暂不提供撤下建议。</strong>
+    {{ plan.note }}以下逐页判定仍然有效。
+  </div>
+  {% else %}
+  <div class="alert {% if plan.has_blocked %}alert-pending{% elif plan.remove %}alert-ok{% else %}alert-ok{% endif %}">
+    <strong>{% if plan.remove %}建议撤下 {{ plan.remove|length }} 份扫描{% elif plan.has_blocked %}部分页面需人工处理{% else %}无需撤下{% endif %}：</strong>
+    {{ plan.note }}
+    {% if report.missing_pages %}
+    <span class="alert-tail">第 {{ report.missing_pages|join('、') }} 页原本就没有有效扫描，仍列为待补扫，不在撤下建议范围内。</span>
+    {% endif %}
+  </div>
+
+  {% if plan.remove %}
+  <h3 class="removal-subhead">建议撤下 · {{ plan.remove|length }} 份</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>编号</th><th>页码</th><th>所属期版</th><th>详情页</th><th>图片</th></tr>
+      </thead>
+      <tbody>
+      {% for scan in plan.remove %}
+        <tr>
+          <td><span class="scan-code">{{ scan.code }}</span></td>
+          <td>{{ scan.pages_text }}</td>
+          <td>{{ scan.issue }} · {{ scan.edition }}</td>
+          <td><a href="{{ scan.detail_url }}" target="_blank" rel="noopener">查看详情 ↗</a></td>
+          <td><a href="{{ scan.image_url }}" target="_blank" rel="noopener">图片 ↗</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if plan.keep %}
+  <h3 class="removal-subhead">建议保留 · {{ plan.keep|length }} 份</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>编号</th><th>页码</th><th>所属期版</th><th>详情页</th><th>图片</th></tr>
+      </thead>
+      <tbody>
+      {% for scan in plan.keep %}
+        <tr>
+          <td><span class="scan-code">{{ scan.code }}</span></td>
+          <td>{{ scan.pages_text }}</td>
+          <td>{{ scan.issue }} · {{ scan.edition }}</td>
+          <td><a href="{{ scan.detail_url }}" target="_blank" rel="noopener">查看详情 ↗</a></td>
+          <td><a href="{{ scan.image_url }}" target="_blank" rel="noopener">图片 ↗</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if plan.has_blocked %}
+  <h3 class="removal-subhead">无法同时满足约束 · 需人工处理</h3>
+  {% for component in plan.blocked %}
+  <div class="alert alert-bad blocked-component">
+    <strong>第 {{ component.pages|join('、') }} 页：</strong>{{ component.reason }}
+    以上撤下与保留建议均不涉及这些扫描，请勿按自动建议处理。
+    <ul class="blocked-scan-list">
+      {% for scan in component.scans %}
+      <li>
+        <span class="scan-code">{{ scan.code }}</span>
+        <span class="scan-pages">页码 {{ scan.pages_text }}</span>
+        <span class="muted">{{ scan.issue }} · {{ scan.edition }}</span>
+        <a href="{{ scan.detail_url }}" target="_blank" rel="noopener">详情页 ↗</a>
+        <a href="{{ scan.image_url }}" target="_blank" rel="noopener">扫描图片 ↗</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endif %}
 </section>
 {% endif %}
 
@@ -81,6 +177,12 @@
             <div class="source-line">
               <span class="scan-code">{{ source.code }}</span>
               <span class="scan-pages">页码 {{ source.pages_text }}</span>
+              {% if plan and plan.available %}
+                {% set decision = plan.decision_by_code.get(source.code) %}
+                {% if decision == 'keep' %}<span class="chip chip-keep">保留</span>
+                {% elif decision == 'remove' %}<span class="chip chip-remove">撤下</span>
+                {% elif decision == 'blocked' %}<span class="chip chip-blocked">需人工</span>{% endif %}
+              {% endif %}
             </div>
             <div class="source-line muted">
               <span>{{ source.issue }} · {{ source.edition }}</span>

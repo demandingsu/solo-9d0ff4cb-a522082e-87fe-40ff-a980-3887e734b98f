@@ -22,6 +22,8 @@ from urllib.parse import urldefrag, urljoin, urlparse
 import httpx
 from bs4 import BeautifulSoup, Tag
 
+from .removal import RemovalPlan, incomplete_crawl_plan, plan_removals
+
 USER_AGENT = "NewspaperScanAudit/1.0 (offline demo)"
 DEFAULT_TIMEOUT = httpx.Timeout(15.0, connect=5.0)
 MAX_DIRECTORY_PAGES = 100
@@ -598,6 +600,7 @@ class IssueReport:
     failures: list[FetchFailure]
     directory_pages: list[str]
     warnings: list[str] = field(default_factory=list)
+    removal_plan: RemovalPlan | None = None
 
     @property
     def status(self) -> str:
@@ -933,6 +936,9 @@ async def inspect_issue(directory_url: str, client: httpx.AsyncClient | None = N
                 coverage[number].append(scan)
 
     pages = [PageFinding(number=number, sources=coverage[number]) for number in range(1, total_pages + 1)]
+    # Only a complete crawl (no directory/detail failure) may produce a
+    # definite removal suggestion; otherwise the per-page verdicts stand.
+    removal_plan = incomplete_crawl_plan() if failures else plan_removals(accepted)
     return IssueReport(
         directory_url=directory_url,
         issue_no=metadata.issue,
@@ -944,4 +950,5 @@ async def inspect_issue(directory_url: str, client: httpx.AsyncClient | None = N
         failures=failures,
         directory_pages=directory_pages,
         warnings=warnings,
+        removal_plan=removal_plan,
     )
